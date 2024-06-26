@@ -1,15 +1,3 @@
-select * from album
-select * from artist
-select * from customer
-select * from employee
-select * from genre
-select * from Invoice
-select * from InvoiceLine
-select * from MediaType
-select * from Playlist
-select * from PlaylistTrack
-select * from Track
-
 --1) Find the artist who has contributed with the maximum no of albums. Display the artist name and the no of albums.
 
 select art.name, count(alb.artistid) as no_of_albums
@@ -42,8 +30,6 @@ where gen.genreid in (1, 2, 9)
 group by concat(firstname,' ',lastname), cust.email, cust.country
 
 --3) Find the employee who has supported the most no of customers. Display the employee name and designation
-
-
 with custsup as 
 		(select concat(emp.firstname, ' ', emp.lastname) as employee_name, title, count(cust.supportrepid) as no_cust_supported
 		from employee emp
@@ -86,11 +72,7 @@ select country
 from invbill
 where  no_of_invoices = (select max(no_of_invoices) from invbill)
 
---6) Name the best customer (customer who spent the most money). REDOOOOO
-
-select * from Invoice
-select * from InvoiceLine
-select * from customer
+--6) Name the best customer (customer who spent the most money). 
 
 with bestcust as
 	(select concat(cust.firstname,' ',cust.lastname) as customer_name, sum(unitprice) as money_spent 
@@ -114,10 +96,7 @@ group by inv.billingcity
 order by count(inv.billingcity) desc
 
 --8) Identify all the albums who have less then 5 track under them.
-    --Display the album name, artist name and the no of tracks in the respective album.
-
-select * from album
-select * from Track
+    --Display the album name, artist name and the no of tracks in the respective album
 
 select alb.title as album_name, tra.composer as artist_name, count(tra.albumid) as no_of_tracks
 from album alb
@@ -127,13 +106,6 @@ having count(tra.albumid) < 5
 
 
 --9) Display the track, album, artist and the genre for all tracks which are not purchased.
-
-
-select * from album
-select * from Track
-select * from genre
-select * from InvoiceLine
-
 
 with purchased as 
 		(select tra.name as name, alb.title as album, tra.composer as artist, gen.name as genre
@@ -149,9 +121,7 @@ where tra.name not in (select name from purchased)
 
 
 -- 10) Find artist who have performed in multiple genres. Diplay the aritist name and the genre.
-
-select * from Track
-
+	
 with dist_genre as 
 		(select count(distinct gen.name) as genre_amt, art.name as artist
 		from track tra
@@ -173,11 +143,6 @@ order by art.name
 
 -- 11) Which is the most popular and least popular genre?
 
-select * from Track
-select * from genre
-select * from InvoiceLine
-
-
 with pop_rank as
 	(select gen.name as name, count(invl.trackid) as popularity
 	from track tra
@@ -197,13 +162,6 @@ where popularity = (select min(popularity) from pop_rank)
 -- 12) Identify if there are tracks more expensive than others. If there are, then
 --     display the track name along with the album title and artist name for these expensive tracks.
 
-
-select * from Track
-select * from Invoice
-select * from InvoiceLine
-select * from album
-select * from artist
-
 select tra.name as track_name, alb.title as album_title, art.name as artist_name
 from track tra 
 join album alb on tra.albumid = alb.albumid
@@ -216,12 +174,6 @@ where unitprice > (select min(unitprice) from track)
   --  Display the artist name along with the no of songs.
  --   [Reason: Now that we know that our customers love rock music, we can decide which musicians to invite to play at the concert.
   --  Lets invite the artists who have written the most rock music in our dataset.]
-
-select * from genre
-select * from album
-select * from artist
-select * from Track
-
 
 with popularity as
 	(select art.name as artist_name, count(tra.genreid) as no_of_songs, rank() over(order by count(tra.genreid) desc) as rank
@@ -271,11 +223,6 @@ with most_popular_genre as
 
 --14) Find the artist who has contributed with the maximum no of songs/tracks. Display the artist name and the no of songs.
 
-select * from genre
-select * from album
-select * from artist
-select * from Track
-
 with tracks as 
 	(select art.name as artist_name, count(tra.trackid) as no_of_songs
 	from track tra
@@ -294,10 +241,7 @@ from Album
 group by albumid 
 having count(1) > 1;
 
-
 --16) Is there any invoice which is issued to a non existing customer?
-select * from customer
-select * from Invoice
 
 select inv.invoiceid, inv.customerid
 from invoice inv
@@ -312,10 +256,7 @@ where not exists (select 1 from customer c
 
 
 --17) Is there any invoice line for a non existing invoice?
-
-select * from Invoice
-select * from InvoiceLine
-
+	
 select *
 from invoice inv
 join invoiceline invl on inv.invoiceid = invl.invoiceid
@@ -328,8 +269,6 @@ where not exists (select 1 from invoiceline invl
                 where inv.invoiceid = invl.invoiceid)
 
 --18) Are there albums without a title?
-
-select * from album
 
 select count(*)
 from album
@@ -348,7 +287,5 @@ from PlaylistTrack pt -- result is 0 which means that all tracks in the playlist
 where not exists (select 1 from Track t 
                  where t.trackid = pt.trackid)
 
-select * from Playlist
-select * from PlaylistTrack
-select * from Track
+
 
